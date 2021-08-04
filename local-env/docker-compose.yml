@@ -1,0 +1,13 @@
+version: '3'
+services:
+  dbinventory1:
+    container_name: dbinventory1
+    build:
+      context: .
+      dockerfile: DockerfileMySql
+    image: dbinventory:1.0.0
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: secretsample
+
