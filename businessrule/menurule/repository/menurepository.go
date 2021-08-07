@@ -5,9 +5,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/zibilal/teepr"
 	"gorm-mysql/appctx"
+	"gorm-mysql/businessrule"
 	"gorm-mysql/businessrule/appid"
 	"gorm-mysql/engine/dbengine"
-	"log"
 	"reflect"
 	"time"
 )
@@ -28,26 +28,28 @@ func (MenuEntity) TableName() string{
 }
 
 type MenuRepository struct {
+	businessrule.BaseRepository
 	dbEngine *dbengine.DbEngine
-	idGenerator func() appid.AppID
 }
 
 func NewMenuRepository(dbEngine *dbengine.DbEngine) *MenuRepository {
 	return &MenuRepository{
 		dbEngine: dbEngine,
-		idGenerator: func() appid.AppID {
-			id, err := uuid.NewUUID()
-			if err != nil {
+		BaseRepository: businessrule.BaseRepository{
+			IdGenerator: func() appid.AppID {
+				id, err := uuid.NewUUID()
+				if err != nil {
 				panic(err)
-			}
-			return appid.AppID(id)
+				}
+				return appid.AppID(id)
+			},
 		},
 	}
 }
 
 func (r *MenuRepository) Create(input interface{}) error {
 	entity := &MenuEntity{
-		Id: r.idGenerator(),
+		Id: r.BaseRepository.IdGenerator(),
 	}
 	err := copyDataToMenuEntity(input, entity)
 	if err != nil {
@@ -72,15 +74,12 @@ func (r *MenuRepository) Update(input interface{}) error {
 	entity := &MenuEntity{}
 	err := copyDataToMenuEntity(input, entity)
 	if err != nil {
-		log.Println("SATU")
 		return err
 	}
 	if entity.Id.IsEmpty() {
-		log.Println("DUA")
 		return errors.New("the Id is empty, please provide the id for this MenuEntity")
 	}
 	result := r.dbEngine.Db.Save(entity)
-	log.Println("TIGA", result.Error)
 	return result.Error
 }
 

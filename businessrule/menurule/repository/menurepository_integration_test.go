@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"gorm-mysql/appctx"
+	"gorm-mysql/businessrule"
 	"gorm-mysql/businessrule/appid"
 	"gorm-mysql/engine/dbengine"
 	"testing"
@@ -22,12 +23,14 @@ func TestIntegrationMenuRepository_CRUD(t *testing.T) {
 
 	repo := &MenuRepository{
 		dbEngine: db,
-		idGenerator: func() appid.AppID {
-			temp, err := appid.FromString("1DD1B664F14E11EBACE1ACDE48001122")
-			if err != nil {
-				t.Fatal(err)
-			}
-			return *temp
+		BaseRepository: businessrule.BaseRepository {
+			IdGenerator: func() appid.AppID {
+				temp, err := appid.FromString("1DD1B664F14E11EBACE1ACDE48001122")
+				if err != nil {
+					t.Fatal(err)
+				}
+				return *temp
+			},
 		},
 	}
 

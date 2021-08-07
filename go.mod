@@ -8,7 +8,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
-	github.com/zibilal/teepr v0.0.0-20210802092613-dec712718b07
+	github.com/zibilal/teepr v0.0.0-20210802094437-31976894f045
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 	gorm.io/driver/mysql v1.1.1
 	gorm.io/gorm v1.21.12

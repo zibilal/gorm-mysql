@@ -1,7 +1,14 @@
 package businessrule
 
+import "gorm-mysql/businessrule/appid"
+
 type Service interface {
 	Serve(input, output interface{}) error
+}
+
+type BaseRepository struct {
+	IdGenerator func() appid.AppID
+	Repository
 }
 
 type Repository interface{

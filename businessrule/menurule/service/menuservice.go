@@ -1,30 +1,69 @@
 package service
 
-import "gorm-mysql/businessrule"
+import (
+	"errors"
+	"gorm-mysql/businessrule"
+)
 
 type MenuService struct {
 	Repository businessrule.Repository
+}
+
+func (s *MenuService) SetUpRepository(repo businessrule.Repository) error {
+	if repo == nil {
+		return errors.New("repo cannot be nil")
+	}
+	s.Repository = repo
+	return nil
 }
 
 type CreateMenuService struct {
 	MenuService
 }
 
-func(s *CreateMenuService) Service(input, output interface{}) error {
+func NewCreateMenuService() *CreateMenuService {
+	return new(CreateMenuService)
+}
 
-	return nil
+func(s *CreateMenuService) Service(input, _ interface{}) error {
+	return s.Repository.Create(input)
 }
 
 type DisplayMenuService struct {
 	MenuService
 }
 
-func (s *DisplayMenuService) Service(input, output interface{}) error {
+func NewDisplayMenuService() *DisplayMenuService {
+	return new(DisplayMenuService)
+}
 
+func (s *DisplayMenuService) Service(input, output interface{}) error {
 	return nil
 }
 
 type UpdateMenuService struct {
+	MenuService
+}
 
+func NewUpdateMenuService() *UpdateMenuService{
+	return new(UpdateMenuService)
+}
+
+func (s *UpdateMenuService) Service(input, output interface{}) error {
+
+	return nil
+}
+
+type DeleteMenuService struct {
+	MenuService
+}
+
+func NewDeleteMenuService() *DeleteMenuService {
+	return new(DeleteMenuService)
+}
+
+func (s *DeleteMenuService) Service(input, output interface{}) error {
+
+	return nil
 }
 
