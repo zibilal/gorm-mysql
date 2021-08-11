@@ -261,10 +261,12 @@ github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9de
 github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
-github.com/zibilal/teepr v0.0.0-20210802092613-dec712718b07 h1:DI3lVCAaDCsnGPac1mUJZEWlcBg6vhCPclRwbpi/pYU=
-github.com/zibilal/teepr v0.0.0-20210802092613-dec712718b07/go.mod h1:SG7bEMG8Mxu98zhEwOgFFFIDkO+e2l5++gKQAeqwAfY=
 github.com/zibilal/teepr v0.0.0-20210802094437-31976894f045 h1:LtnUx1boowiet1YrLhFrRccAahAzBG4lV/h0ZM0Gu8I=
 github.com/zibilal/teepr v0.0.0-20210802094437-31976894f045/go.mod h1:SG7bEMG8Mxu98zhEwOgFFFIDkO+e2l5++gKQAeqwAfY=
+github.com/zibilal/teepr v0.0.0-20210809115359-716ccfe5323c h1:EiTlvp1GKsQaGLBvtDl2DspZosF73Ncy55+7mChdCbI=
+github.com/zibilal/teepr v0.0.0-20210809115359-716ccfe5323c/go.mod h1:SG7bEMG8Mxu98zhEwOgFFFIDkO+e2l5++gKQAeqwAfY=
+github.com/zibilal/teepr v0.0.0-20210810084344-3404d40f97dc h1:r8Nj4Jm8/rpkgzSBDXuab0uWJ5KI820hWrZmSpKIteM=
+github.com/zibilal/teepr v0.0.0-20210810084344-3404d40f97dc/go.mod h1:SG7bEMG8Mxu98zhEwOgFFFIDkO+e2l5++gKQAeqwAfY=
 go.etcd.io/etcd/api/v3 v3.5.0/go.mod h1:cbVKeC6lCfl7j/8jBhAK6aIYO9XOjdptoxU/nLQcPvs=
 go.etcd.io/etcd/client/pkg/v3 v3.5.0/go.mod h1:IJHfcCEKxYu1Os13ZdwCwIUTUVGYTSAM3YSwc9/Ac1g=
 go.etcd.io/etcd/client/v2 v2.305.0/go.mod h1:h9puh54ZTgAKtEbut2oe9P4L/oqKCVB6xsXlzd7alYQ=

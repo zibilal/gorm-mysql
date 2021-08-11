@@ -3,6 +3,8 @@ package appid
 import (
 	"database/sql/driver"
 	"encoding/hex"
+	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"reflect"
 )
@@ -23,6 +25,15 @@ func (id AppID) Value() (driver.Value, error) {
 
 func (id *AppID) GormDataType() string {
 	return "binary(16)"
+}
+
+func NewAppID() *AppID {
+	tmp, err := uuid.NewUUID()
+	if err != nil {
+		panic(err)
+	}
+	tmpApp := AppID(tmp)
+	return &tmpApp
 }
 
 func (id AppID) IsEmpty() bool {
@@ -46,4 +57,21 @@ func FromString(s string) (*AppID, error) {
 	}
 
 	return FromBytes(temp)
+}
+
+func ParseToAppID(input interface{})(interface{}, error) {
+	tmp, ok := input.(string)
+	if !ok {
+		return nil, errors.New(fmt.Sprintf("Unable to parse input of type %v, only accepts type of string", reflect.TypeOf(input)))
+	}
+	v, err := hex.DecodeString(tmp)
+	if err != nil {
+		return nil, err
+	}
+	result, err := uuid.FromBytes(v)
+	if err != nil {
+		return nil, err
+	}
+	theId := AppID(result)
+	return theId, nil
 }

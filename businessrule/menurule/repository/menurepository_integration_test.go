@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"gorm-mysql/appctx"
 	"gorm-mysql/businessrule"
@@ -176,5 +175,5 @@ func TestHex_DecodeString(t *testing.T) {
 	if err != nil {
 		t.Fatal("Error1", err)
 	}
-	fmt.Printf("%v\n", id)
+	t.Logf("%v\n", id)
 }

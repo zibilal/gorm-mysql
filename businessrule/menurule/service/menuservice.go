@@ -49,9 +49,8 @@ func NewUpdateMenuService() *UpdateMenuService{
 	return new(UpdateMenuService)
 }
 
-func (s *UpdateMenuService) Service(input, output interface{}) error {
-
-	return nil
+func (s *UpdateMenuService) Service(input, _ interface{}) error {
+	return s.Repository.Update(input)
 }
 
 type DeleteMenuService struct {
