@@ -196,7 +196,7 @@ func TestDisplayMenuService_Service(t *testing.T) {
 			t.Fatalf("%s expected output length > 0 is true, got %v", failed, len(output) > 0)
 		}
 
-		t.Logf("%s")
+		t.Logf("%s Len: %d", success, len(output))
 		t.Logf("%s Output: %v", success, output)
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"reflect"
+	"strings"
 )
 
 type AppID uuid.UUID
@@ -64,6 +65,7 @@ func ParseToAppID(input interface{})(interface{}, error) {
 	if !ok {
 		return nil, errors.New(fmt.Sprintf("Unable to parse input of type %v, only accepts type of string", reflect.TypeOf(input)))
 	}
+	tmp = strings.Replace(tmp, "-", "", -1)
 	v, err := hex.DecodeString(tmp)
 	if err != nil {
 		return nil, err
