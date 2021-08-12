@@ -38,7 +38,11 @@ func NewDisplayMenuService() *DisplayMenuService {
 }
 
 func (s *DisplayMenuService) Service(input, output interface{}) error {
-	return nil
+	query, ok := input.(map[string]interface{})
+	if !ok {
+		return errors.New("input accepted only of typed map[string]interface{}")
+	}
+	return s.Repository.Fetch(query, output)
 }
 
 type UpdateMenuService struct {
@@ -62,7 +66,6 @@ func NewDeleteMenuService() *DeleteMenuService {
 }
 
 func (s *DeleteMenuService) Service(input, output interface{}) error {
-
 	return nil
 }
 

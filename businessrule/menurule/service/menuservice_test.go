@@ -3,11 +3,13 @@ package service
 import (
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/zibilal/teepr"
 	"gorm-mysql/businessrule"
 	"gorm-mysql/businessrule/appid"
 	"gorm-mysql/businessrule/menurule/repository"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -64,7 +66,7 @@ func (r *mockrepository) Delete(input interface{}) error {
 
 func (r *mockrepository) Fetch(query map[string]interface{}, output interface{}) error {
 	r.query = query
-	t, ok := output.(*[]repository.MenuEntity)
+	_, ok := output.(*[]repository.MenuEntity)
 	if !ok {
 		return errors.New("unexpected type. only accept pointer of []MenuEntity")
 	}
@@ -78,17 +80,24 @@ func (r *mockrepository) Fetch(query map[string]interface{}, output interface{})
 	menu2 := repository.MenuEntity{
 		Id:          *appid.NewAppID(),
 		Name:        "Menu Test 2",
-		Type:        "MO",
+		Type:        "MT",
 		Description: "Menu Test 2 Description",
 	}
 	menu3 := repository.MenuEntity{
 		Id:          *appid.NewAppID(),
 		Name:        "Menu Test 3",
-		Type:        "MX",
+		Type:        "MT",
 		Description: "Menu Test 3 Description",
 	}
 
-	*t = append(*t, menu1, menu2, menu3)
+	oval := reflect.Indirect(reflect.ValueOf(output))
+	otyp := oval.Type()
+	fmt.Println("Oval:", oval, "Otyp: ", otyp)
+	outSlice := reflect.MakeSlice(reflect.SliceOf(otyp.Elem()),0, 3)
+	outSlice = reflect.Append(outSlice, reflect.ValueOf(menu1),
+		reflect.ValueOf(menu2), reflect.ValueOf(menu3))
+	oval.Set(outSlice)
+	fmt.Println("Here...")
 
 	return nil
 }
@@ -161,6 +170,35 @@ func TestUpdateMenuService_Service(t *testing.T) {
 		t.Logf("%s Expected error not nil, got %v", success, err)
 	}
 
+}
+
+func TestDisplayMenuService_Service(t *testing.T) {
+	t.Log("Test DisplayMenuService able to get data")
+	{
+		svc := NewDisplayMenuService()
+		repomock := new_mockrepository()
+		err := svc.SetUpRepository(repomock)
+		if err != nil {
+			t.Fatalf("%s expected error nil, got %v", failed, err)
+		}
+		t.Logf("%s expected error nil", success)
+
+		query := map[string]interface{} {
+			"type": "MT",
+		}
+
+		output := make([]repository.MenuEntity, 0)
+		err = svc.Service(query, &output)
+		if err != nil {
+			t.Fatalf("%s expected error nil, got %v", failed, err)
+		}
+		if len(output) <= 0 {
+			t.Fatalf("%s expected output length > 0 is true, got %v", failed, len(output) > 0)
+		}
+
+		t.Logf("%s")
+		t.Logf("%s Output: %v", success, output)
+	}
 }
 
 func TestUpdateAppId(t *testing.T) {
