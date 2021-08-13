@@ -28,6 +28,14 @@ func (id *AppID) GormDataType() string {
 	return "binary(16)"
 }
 
+func (id AppID) IsEmpty() bool {
+	return reflect.DeepEqual(id, reflect.Zero(reflect.TypeOf(id)).Interface())
+}
+
+func (id AppID) String() string{
+	return uuid.UUID(id).String()
+}
+
 func NewAppID() *AppID {
 	tmp, err := uuid.NewUUID()
 	if err != nil {
@@ -35,10 +43,6 @@ func NewAppID() *AppID {
 	}
 	tmpApp := AppID(tmp)
 	return &tmpApp
-}
-
-func (id AppID) IsEmpty() bool {
-	return reflect.DeepEqual(id, reflect.Zero(reflect.TypeOf(id)).Interface())
 }
 
 func FromBytes(b []byte) (*AppID, error) {

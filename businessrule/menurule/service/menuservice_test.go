@@ -2,14 +2,13 @@ package service
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/zibilal/teepr"
 	"gorm-mysql/businessrule"
 	"gorm-mysql/businessrule/appid"
 	"gorm-mysql/businessrule/menurule/repository"
-	"reflect"
 	"strings"
 	"testing"
 )
@@ -66,10 +65,6 @@ func (r *mockrepository) Delete(input interface{}) error {
 
 func (r *mockrepository) Fetch(query map[string]interface{}, output interface{}) error {
 	r.query = query
-	_, ok := output.(*[]repository.MenuEntity)
-	if !ok {
-		return errors.New("unexpected type. only accept pointer of []MenuEntity")
-	}
 
 	menu1 := repository.MenuEntity{
 		Id:          *appid.NewAppID(),
@@ -90,16 +85,10 @@ func (r *mockrepository) Fetch(query map[string]interface{}, output interface{})
 		Description: "Menu Test 3 Description",
 	}
 
-	oval := reflect.Indirect(reflect.ValueOf(output))
-	otyp := oval.Type()
-	fmt.Println("Oval:", oval, "Otyp: ", otyp)
-	outSlice := reflect.MakeSlice(reflect.SliceOf(otyp.Elem()),0, 3)
-	outSlice = reflect.Append(outSlice, reflect.ValueOf(menu1),
-		reflect.ValueOf(menu2), reflect.ValueOf(menu3))
-	oval.Set(outSlice)
-	fmt.Println("Here...")
+	menus := make([]repository.MenuEntity, 0)
+	menus = append(menus, menu1, menu2, menu3)
 
-	return nil
+	return teepr.Teepr(menus, output)
 }
 
 func TestMenuService_SetUpRepository_Success(t *testing.T) {
@@ -197,7 +186,58 @@ func TestDisplayMenuService_Service(t *testing.T) {
 		}
 
 		t.Logf("%s Len: %d", success, len(output))
-		t.Logf("%s Output: %v", success, output)
+		b, err := json.MarshalIndent(output, "" , " ")
+		if err != nil {
+			t.Fatalf("%s expected error nil, got %v", failed, err)
+		}
+		t.Logf("%s Result: %s", success, string(b))
+	}
+	t.Log("Test DisplayMenuService, query nil")
+	{
+		svc := NewDisplayMenuService()
+		repomock := new_mockrepository()
+		err := svc.SetUpRepository(repomock)
+		if err != nil {
+			t.Fatalf("%s expected error nil, got %v", failed, err)
+		}
+		t.Logf("%s expected error nil", success)
+
+		output := make([]MenuService, 0)
+		err = svc.Service(nil, &output)
+		if err == nil {
+			t.Fatalf("%s expected error not nil", failed)
+		}
+		t.Logf("%s expected error not nil, got %v", success, err)
+	}
+	t.Log("Test DisplayMenuService, output nil")
+	{
+		svc := NewDisplayMenuService()
+		repomock := new_mockrepository()
+		err := svc.SetUpRepository(repomock)
+		if err != nil {
+			t.Fatalf("%s expected error nil, got %v", failed, err)
+		}
+		t.Logf("%s expected error nil", success)
+
+		query := map[string]interface{} {
+			"type": "MT",
+		}
+		err = svc.Service(query, nil)
+		t.Logf("%s The error: %v", success, err)
+	}
+}
+
+func TestDeleteMenuService_Service(t *testing.T) {
+	t.Log("Test Delete Menu")
+	{
+		svc := NewDeleteMenuService()
+		repomock := new_mockrepository()
+		err := svc.SetUpRepository(repomock)
+
+		if err != nil {
+			t.Fatalf("%s expected error nil, got %s", failed, err.Error())
+		}
+		t.Logf("%s expected error nil", success)
 	}
 }
 

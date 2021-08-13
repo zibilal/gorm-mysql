@@ -8,7 +8,6 @@ import (
 	"gorm-mysql/businessrule"
 	"gorm-mysql/businessrule/appid"
 	"gorm-mysql/engine/dbengine"
-	"reflect"
 	"time"
 )
 
@@ -48,6 +47,9 @@ func NewMenuRepository(dbEngine *dbengine.DbEngine) *MenuRepository {
 }
 
 func (r *MenuRepository) Create(input interface{}) error {
+	if input == nil {
+		return errors.New("input is required")
+	}
 	entity := &MenuEntity{
 		Id: r.BaseRepository.IdGenerator(),
 	}
@@ -71,6 +73,9 @@ func (r *MenuRepository) Create(input interface{}) error {
 }
 
 func (r *MenuRepository) Update(input interface{}) error {
+	if input == nil {
+		return errors.New("input is required")
+	}
 	entity := &MenuEntity{}
 	err := copyDataToMenuEntity(input, entity)
 	if err != nil {
@@ -84,6 +89,9 @@ func (r *MenuRepository) Update(input interface{}) error {
 }
 
 func (r *MenuRepository) Delete(input interface{}) error {
+	if input == nil {
+		return errors.New("input is required")
+	}
 	entity := &MenuEntity{}
 	err := copyDataToMenuEntity(input, entity)
 	if err != nil {
@@ -98,8 +106,19 @@ func (r *MenuRepository) Delete(input interface{}) error {
 }
 
 func (r *MenuRepository) Fetch(query map[string]interface{}, output interface{}) error {
-	result := r.dbEngine.Db.Where(query).Find(output)
-	return result.Error
+
+	tmp := make([]MenuEntity, 0)
+	result := r.dbEngine.Db.Where(query).Find(&tmp)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	err := teepr.Teepr(tmp, output)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func copyDataToMenuEntity(input interface{}, entity *MenuEntity) error {
@@ -108,7 +127,7 @@ func copyDataToMenuEntity(input interface{}, entity *MenuEntity) error {
 		return err
 	}
 
-	if reflect.DeepEqual(entity, &MenuEntity{}) {
+	if teepr.IsEmpty(entity) {
 		return errors.New("fail to extract Value Object into Entity")
 	}
 

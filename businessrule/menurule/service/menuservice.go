@@ -26,6 +26,9 @@ func NewCreateMenuService() *CreateMenuService {
 }
 
 func(s *CreateMenuService) Service(input, _ interface{}) error {
+	if input == nil {
+		return errors.New("please provide the input value")
+	}
 	return s.Repository.Create(input)
 }
 
@@ -38,6 +41,9 @@ func NewDisplayMenuService() *DisplayMenuService {
 }
 
 func (s *DisplayMenuService) Service(input, output interface{}) error {
+	if input == nil {
+		return errors.New("please provide the input value")
+	}
 	query, ok := input.(map[string]interface{})
 	if !ok {
 		return errors.New("input accepted only of typed map[string]interface{}")
@@ -54,6 +60,9 @@ func NewUpdateMenuService() *UpdateMenuService{
 }
 
 func (s *UpdateMenuService) Service(input, _ interface{}) error {
+	if input == nil {
+		return errors.New("please provide the input value")
+	}
 	return s.Repository.Update(input)
 }
 
@@ -65,7 +74,10 @@ func NewDeleteMenuService() *DeleteMenuService {
 	return new(DeleteMenuService)
 }
 
-func (s *DeleteMenuService) Service(input, output interface{}) error {
-	return nil
+func (s *DeleteMenuService) Service(input, _ interface{}) error {
+	if input == nil {
+		return errors.New("please provide the input value")
+	}
+	return s.Repository.Delete(input)
 }
 

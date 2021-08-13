@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/stretchr/testify/assert"
+	"github.com/zibilal/teepr"
 	"gorm-mysql/appctx"
 	"gorm-mysql/businessrule"
 	"gorm-mysql/businessrule/appid"
@@ -9,6 +10,9 @@ import (
 	"testing"
 )
 
+const (
+	failed = "\u2717"
+)
 func TestIntegrationMenuRepository_CRUD(t *testing.T) {
 	appctx.InitAppContext()
 	appctx.AppContext.User = map[string]string{
@@ -22,7 +26,7 @@ func TestIntegrationMenuRepository_CRUD(t *testing.T) {
 
 	repo := &MenuRepository{
 		dbEngine: db,
-		BaseRepository: businessrule.BaseRepository {
+		BaseRepository: businessrule.BaseRepository{
 			IdGenerator: func() appid.AppID {
 				temp, err := appid.FromString("1DD1B664F14E11EBACE1ACDE48001122")
 				if err != nil {
@@ -55,7 +59,7 @@ func TestIntegrationMenuRepository_CRUD(t *testing.T) {
 	}
 
 	updateMenu1 := struct {
-		Id appid.AppID
+		Id          appid.AppID
 		Name        string
 		Type        string
 		Description string
@@ -64,7 +68,7 @@ func TestIntegrationMenuRepository_CRUD(t *testing.T) {
 	}
 
 	deleteMenu1 := struct {
-		Id appid.AppID
+		Id          appid.AppID
 		Name        string
 		Type        string
 		Description string
@@ -73,19 +77,19 @@ func TestIntegrationMenuRepository_CRUD(t *testing.T) {
 	}
 
 	outputQuery := make([]MenuEntity, 0)
-	queryArgs := args {
+	queryArgs := args{
 		queryById,
 		&outputQuery,
 	}
 
 	tests := []struct {
-		name string
-		args args
+		name    string
+		args    args
 		wantErr bool
 	}{
 		{
 			"Test Create Menu 1",
-			args {
+			args{
 				nil,
 				&createMenu1,
 			},
@@ -98,7 +102,7 @@ func TestIntegrationMenuRepository_CRUD(t *testing.T) {
 		},
 		{
 			"Test Update Menu 1",
-			args {
+			args{
 				nil,
 				&updateMenu1,
 			},
@@ -141,7 +145,12 @@ func TestIntegrationMenuRepository_CRUD(t *testing.T) {
 				if err := repo.Update(tt.args.inputOutput); (err != nil) != tt.wantErr {
 					t.Errorf("Update() error = %v, wantErr %v", err, tt.wantErr)
 				} else {
-					outputFetch := make([]MenuEntity, 0)
+					var outputFetch []struct {
+						Id          appid.AppID
+						Name        string
+						Type        string
+						Description string
+					}
 					err := repo.Fetch(tt.args.query, &outputFetch)
 					if err != nil {
 						t.Fatal(err)
@@ -166,6 +175,153 @@ func TestIntegrationMenuRepository_CRUD(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestMenuRepository_Create(t *testing.T) {
+	appctx.InitAppContext()
+	appctx.AppContext.User = map[string]string{
+		"name": "CRUD Testing",
+	}
+
+	db, err := dbengine.InitDbEngine("localhost", "inventoryusr", "dbpass", "inventorydb", 3306)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	repo := &MenuRepository{
+		dbEngine: db,
+		BaseRepository: businessrule.BaseRepository{
+			IdGenerator: func() appid.AppID {
+				temp, err := appid.FromString("1DD1B664F14E11EBACE1ACDE48001122")
+				if err != nil {
+					t.Fatal(err)
+				}
+				return *temp
+			},
+		},
+	}
+	createMenu1 := struct {
+		Name        string
+		Type        string
+		Description string
+	}{
+		"Menu Test 1", "EN", "A test description",
+	}
+	t.Log("Test Create A New menu")
+	{
+		err := repo.Create(createMenu1)
+		if err != nil {
+			t.Fatalf("test failed: %v", err)
+		}
+	}
+}
+
+func TestMenuRepository_Delete(t *testing.T) {
+	appctx.InitAppContext()
+	appctx.AppContext.User = map[string]string{
+		"name": "CRUD Testing",
+	}
+
+	db, err := dbengine.InitDbEngine("localhost", "inventoryusr", "dbpass", "inventorydb", 3306)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	repo := &MenuRepository{
+		dbEngine: db,
+		BaseRepository: businessrule.BaseRepository{
+			IdGenerator: func() appid.AppID {
+				temp, err := appid.FromString("1DD1B664F14E11EBACE1ACDE48001122")
+				if err != nil {
+					t.Fatal(err)
+				}
+				return *temp
+			},
+		},
+	}
+
+	t.Log("Test Delete a menu")
+	{
+		appId, _ := appid.FromString("1DD1B664F14E11EBACE1ACDE48001122")
+		deleteMenu1 := struct {
+			Id          appid.AppID
+			Name        string
+			Type        string
+			Description string
+		}{
+			*appId, "Menu Test 1 Updated", "EN", "A test description Updated",
+		}
+
+		err := repo.Delete(deleteMenu1)
+		if err != nil {
+			t.Fatalf("%s delete failed; expected error nil, got %v", failed, err)
+		}
+	}
+}
+
+func TestMenuRepository_Fetch(t *testing.T) {
+	appctx.InitAppContext()
+	appctx.AppContext.User = map[string]string{
+		"name": "CRUD Testing",
+	}
+
+	db, err := dbengine.InitDbEngine("localhost", "inventoryusr", "dbpass", "inventorydb", 3306)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	repo := &MenuRepository{
+		dbEngine: db,
+		BaseRepository: businessrule.BaseRepository{
+			IdGenerator: func() appid.AppID {
+				temp, err := appid.FromString("1DD1B664F14E11EBACE1ACDE48001122")
+				if err != nil {
+					t.Fatal(err)
+				}
+				return *temp
+			},
+		},
+	}
+	t.Log("Test Fetching data from a database: ")
+	{
+		appId, err := appid.FromString("1DD1B664F14E11EBACE1ACDE48001122")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		queryById := map[string]interface{}{
+			"id": appId,
+		}
+		var output []struct {
+			Id          appid.AppID
+			Name        string
+			Type        string
+			Description string
+		}
+		err = repo.Fetch(queryById, &output)
+		if err != nil {
+			t.Fatalf("Fetch() error = %v, wantErr = %v", err, false)
+		}
+
+		tmp := output
+		assert.Equal(t, 1, len(tmp))
+		assert.Equal(t, tmp[0].Id, *appId)
+		assert.Equal(t, tmp[0].Name, "Menu Test 1")
+		assert.Equal(t, tmp[0].Type, "EN")
+		assert.Equal(t, tmp[0].Description, "A test description")
+
+		var outputType []struct {
+			Id          appid.AppID
+			Name        string
+			Type        string
+			Description string
+		}
+
+		err = teepr.Teepr(tmp, &outputType)
+		if err != nil {
+			t.Fatalf("Fetch() error = %v", err)
+		}
 	}
 }
 
